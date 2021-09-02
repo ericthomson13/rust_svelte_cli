@@ -1,0 +1,8 @@
+[package]
+name = "rust-svelte-cli"
+version = "0.1.0"
+edition = "2018"
+authors = ["Eric Thomson"]
+categories = ["command-line-utilities"]
+[dependencies]
+structopt = "0.3.13"
