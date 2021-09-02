@@ -17,17 +17,19 @@ struct Cli {
 
 static YES: &str = "Y";
 static PRESENTER: &str = "Presenter";
+static UNIT_TEST_EXT: &str = ".test.html";
 
 fn main() {
   let args = Cli::from_args();
   let component = args.component;
   let html_extention = ".html";
-  let unit_test_extension = ".test.html";
+  let e2e_test_extension = ".e2e.js";
+
   println!("creating new component {}", component);
   if String::from(&args.presenter).eq(&YES) && args.regions_for_presenter.len() > 0 {
     println!("creating presenter for {}", component);
     for mut region in args.regions_for_presenter {
-      /// Converts Edge Case for "MX" to "Mexico" otherwise Uppercases Region
+      // Converts Edge Case for "MX" to "Mexico" otherwise Uppercases Region
       // TODO: add fn to handle this for both Presenter and View
       if String::from(region.clone()).eq("mx") {
         region = "Mexico".to_string();
@@ -50,6 +52,7 @@ fn main() {
   }
   let mut view_file_name = component.clone();
   view_file_name  += "View";
+  let mut unit_test_view_file_name = &view_file_name.clone();
   if args.regions_for_view.len() > 0 {
     for region in args.regions_for_view {
       view_file_name += &region;
@@ -57,12 +60,16 @@ fn main() {
       println!("writing view for {}", region);
       // TODO: have write_file create correct file stub with correct names
       // TODO: have write_file create unit test stub
+      // unit_test_view_file_name += &region;
+      // unit_test_view_file_name += &UNIT_TEST_EXT;
+      println!("writing view unit test for {}", unit_test_view_file_name)
     }
   } else {
     // Creates a file for the View
     view_file_name  += &html_extention;
     println!("writing {}", view_file_name);
     // TODO: have write_file create correct file stub with correct names
+    // unit_test_view_file_name += &UNIT_TEST_EXT;
     // TODO: have write_file create unit test stub
   }
 }
