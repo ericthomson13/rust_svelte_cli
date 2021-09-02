@@ -50,7 +50,7 @@ fn create_file_names (base_name: &str, regions: Vec<String>, component_type: &st
       if String::from(region.clone()).eq("mx") {
         region = "Mexico".to_string();
       } else {
-        region = region.to_uppercase();
+        region = capital_case(&region);
       }
 
       let mut region_file_name = new_file_name.clone();
@@ -74,4 +74,12 @@ fn create_file_names (base_name: &str, regions: Vec<String>, component_type: &st
 
   println!("writing view unit test for {} global", unit_test_file_name);
   println!("creating {} for {} global", new_file_name, component_type);
+}
+
+fn capital_case (s: &str) -> String {
+  let mut chars = s.chars();
+  match chars.next() {
+    None => String::new(),
+    Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
+  }
 }
