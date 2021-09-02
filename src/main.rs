@@ -5,7 +5,7 @@ struct Cli {
   component: String,
   #[structopt(short = "p", long = "presenter")]
   presenter: String,
-  #[structopt(short = "r", long = "regions")]
+  #[structopt(short = "r", long = "regions-presenter")]
   regions_for_presenter: Vec<String>,
   #[structopt(short = "v", long = "regions-view")]
   regions_for_view: Vec<String>,
@@ -30,72 +30,48 @@ fn main() {
   println!("creating new component {}, in {}", component, directory_to_write);
   fs::create_dir_all(directory_to_write).expect("directory failed to write");
 
-  if String::from(&args.presenter).eq(&YES) && args.regions_for_presenter.len() > 0 {
-    println!("creating presenter for {}", component);
-    // Creates any region specific presenters
-    for mut region in args.regions_for_presenter {
-      // Converts Edge Case for "MX" to "Mexico" otherwise Uppercases Region
-      // TODO: add fn to handle this for both Presenter and View
+  // Creates regional presenters if necessary
+  if String::from(&args.presenter).eq(&YES) {
+    let mut presenter_file_name_base = &mut component.clone();
+    create_file_names(presenter_file_name_base, args.regions_for_presenter, PRESENTER);
+  }
+
+  // Creates View Files
+  let mut view_file_name_base = &mut component.clone();
+  view_file_name_base.push_str(&VIEW_FILE_APPEND);
+
+  create_file_names(view_file_name_base, args.regions_for_view, VIEW_FILE_APPEND);
+}
+
+fn create_file_names (base_name: &str, regions: Vec<String>, component_type: &str) {
+  let mut new_file_name = base_name.clone().to_string();
+  if regions.len() > 0 {
+    for mut region in regions {
       if String::from(region.clone()).eq("mx") {
         region = "Mexico".to_string();
       } else {
         region = region.to_uppercase();
       }
-      let mut presenter_file_name = component.clone();
-      presenter_file_name += &PRESENTER;
-      presenter_file_name += &region;
-      let mut presenter_unit_test_name = presenter_file_name.clone();
-      presenter_file_name += &HTML_EXTENSION;
 
-      println!("writing {}", presenter_file_name);
-      let mock_file_string = Vec::<String>::new();
-      // self::write_file::write_new_file(&presenter_file_name, &directory_to_write, &mock_file_string);
-      // TODO: have write_file create correct file stub with correct names
-      // TODO: have write_file create correct file stub for unit tests
+      let mut region_file_name = new_file_name.clone();
+      region_file_name.push_str(component_type);
+      region_file_name.push_str(&region);
+      region_file_name.push_str(HTML_EXTENSION);
+
+      let mut region_unit_test_file_name = region_file_name.clone();
+      region_unit_test_file_name.push_str(UNIT_TEST_EXT);
+
+      println!("creating {} for {}", component_type, region);
+      println!("writing view unit test for {}", region_unit_test_file_name);
     }
-
-    // Creates global Presenter
-    let mut global_presenter_file_name = component.clone();
-    global_presenter_file_name += &PRESENTER;
-    global_presenter_file_name += &HTML_EXTENSION;
-    println!("writing {}", global_presenter_file_name);
-    // TODO: have write_file create correct file stub with correct names
-    // TODO: have write_file create correct file stub for unit tests
-  } else if String::from(&args.presenter).eq(&YES) {
-    let mut presenter_file_name = component.clone();
-    presenter_file_name += &PRESENTER;
-    presenter_file_name += &HTML_EXTENSION;
-    println!("writing {}", presenter_file_name);
   }
-  let mut view_file_name = &mut component.clone();
-  view_file_name.push_str(&VIEW_FILE_APPEND);
-  let mut unit_test_view_file_name = &mut view_file_name.clone();
-  unit_test_view_file_name.push_str(HTML_EXTENSION);
-  unit_test_view_file_name.push_str(UNIT_TEST_EXT);
-  if args.regions_for_view.len() > 0 {
-    for region in args.regions_for_view {
-      view_file_name.push_str(&region);
-      view_file_name.push_str(&HTML_EXTENSION);
-      println!("writing view for {}", region);
-      // TODO: have write_file create correct file stub with correct names
-      // TODO: have write_file create unit test stub
-      // unit_test_view_file_name += &region;
-      // unit_test_view_file_name += &UNIT_TEST_EXT;
-      println!("writing view unit test for {}", unit_test_view_file_name)
-    }
-  } else {
-    // Creates a file for the View
-    view_file_name.push_str(&HTML_EXTENSION);
-    println!("writing {}", view_file_name);
-    create_file_names(view_file_name.to_string(), args.regions_for_view, VIEW_FILE_APPEND);
-    // TODO: have write_file create correct file stub with correct names
-    // unit_test_view_file_name += &UNIT_TEST_EXT;
-    // TODO: have write_file create unit test stub
-    println!("writing view unit test for {}", unit_test_view_file_name);
-  }
-}
+  // Creates Global Component
+  new_file_name.push_str(component_type);
+  new_file_name.push_str(HTML_EXTENSION);
 
-fn create_file_names (base_name: String, regions: Vec<String>, presenter_or_view: &str) {
-  let mut component_file_name = base_name.clone();
-  component_file_name.push_str(presenter_or_view.clone());
+  let mut unit_test_file_name = new_file_name.clone();
+  unit_test_file_name.push_str(UNIT_TEST_EXT);
+
+  println!("writing view unit test for {} global", unit_test_file_name);
+  println!("creating {} for {} global", new_file_name, component_type);
 }
