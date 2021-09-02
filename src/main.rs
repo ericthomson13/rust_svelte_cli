@@ -21,10 +21,15 @@ static HTML_EXTENSION: &str = ".html";
 static E2E_TEST_EXTENSION: &str = ".e2e.js";
 static VIEW_FILE_APPEND: &str = "View";
 
-use std::fs;
+use askama::Template;
+#[derive(Template)]
+#[template(path = "presenter.html")]
+struct PresenterTemplate<'a> {
+  name: &'a str,
+}
 
 // TODO: add in parsing for regionalCompiler additions and alphabetization parsing
-
+use std::fs;
 fn main() {
   let args = Cli::from_args();
   let component = args.component;

@@ -6,3 +6,4 @@ authors = ["Eric Thomson"]
 categories = ["command-line-utilities"]
 [dependencies]
 structopt = "0.3.13"
+askama = "0.10.5"
