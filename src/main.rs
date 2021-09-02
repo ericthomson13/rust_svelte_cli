@@ -28,6 +28,7 @@ fn main() {
     println!("creating presenter for {}", component);
     for mut region in args.regions_for_presenter {
       /// Converts Edge Case for "MX" to "Mexico" otherwise Uppercases Region
+      // TODO: add fn to handle this for both Presenter and View
       if String::from(region.clone()).eq("mx") {
         region = "Mexico".to_string();
       } else {
@@ -50,7 +51,7 @@ fn main() {
   let mut view_file_name = component.clone();
   view_file_name  += "View";
   if args.regions_for_view.len() > 0 {
-    for mut region in args.regions_for_view {
+    for region in args.regions_for_view {
       view_file_name += &region;
       view_file_name += &html_extention;
       println!("writing view for {}", region);
