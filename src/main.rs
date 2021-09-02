@@ -9,6 +9,8 @@ struct Cli {
   regions_for_presenter: Vec<String>,
   #[structopt(short = "v", long = "regions-view")]
   regions_for_view: Vec<String>,
+  #[structopt(short = "c", long = "component-config")]
+  component_config_regions: Vec<String>,
 }
 
 static YES: &str = "Y";
@@ -20,7 +22,8 @@ static E2E_TEST_EXTENSION: &str = ".e2e.js";
 static VIEW_FILE_APPEND: &str = "View";
 
 use std::fs;
-mod write_file;
+
+// TODO: add in parsing for regionalCompiler additions and alphabetization parsing
 
 fn main() {
   let args = Cli::from_args();
@@ -28,19 +31,20 @@ fn main() {
   let mut directory_to_write = DIRECTORY_BASE.clone().to_owned();
   directory_to_write.push_str(&component);
   println!("creating new component {}, in {}", component, directory_to_write);
-  fs::create_dir_all(directory_to_write).expect("directory failed to write");
-
+  fs::create_dir_all(&directory_to_write).expect("directory failed to write");
+  if args.component_config_regions.len() > 0 {
+    create_component_config(&directory_to_write, args.component_config_regions);
+  }
   // Creates regional presenters if necessary
   if String::from(&args.presenter).eq(&YES) {
-    let mut presenter_file_name_base = &mut component.clone();
-    create_file_names(presenter_file_name_base, args.regions_for_presenter, PRESENTER);
+    let presenter_file_name_base = component.clone();
+    create_file_names(&presenter_file_name_base, args.regions_for_presenter, PRESENTER);
   }
 
   // Creates View Files
-  let mut view_file_name_base = &mut component.clone();
+  let mut view_file_name_base = component.clone();
   view_file_name_base.push_str(&VIEW_FILE_APPEND);
-
-  create_file_names(view_file_name_base, args.regions_for_view, VIEW_FILE_APPEND);
+  create_file_names(&view_file_name_base, args.regions_for_view, VIEW_FILE_APPEND);
 }
 
 fn create_file_names (base_name: &str, regions: Vec<String>, component_type: &str) {
@@ -76,6 +80,16 @@ fn create_file_names (base_name: &str, regions: Vec<String>, component_type: &st
   println!("creating {} for {} global", new_file_name, component_type);
 }
 
+fn create_component_config (base_dir: &str, regions_for_config: Vec<String>) {
+  let mut config_dir = base_dir.clone().to_string();
+  let config = "config".to_string();
+  config_dir.push_str(&config);
+  fs::create_dir_all(config_dir).expect("directory failed to write");
+  for region in regions_for_config {
+    // create regional config
+    println!("Writing component config for {}", region);
+  }
+}
 fn capital_case (s: &str) -> String {
   let mut chars = s.chars();
   match chars.next() {
@@ -83,3 +97,4 @@ fn capital_case (s: &str) -> String {
     Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
   }
 }
+
