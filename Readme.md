@@ -10,7 +10,7 @@ This is a CLI designed specifically to help build out components in V2 svelte fo
 ``` Does this component need a presenter? (Y/n) ```
 ``` Is this component a global component? (Y/n) ```
   - If not global component will have more prompts
-  ``` Which regional files does this component need? (global/BPI/MX/pt) ```
+  ``` Which regional files does this component need? (global/{region}) ```
 - This will allow the regionalCompilerConfigs to populate as needed
-``` Which regions is this component turned on for? (global, BPI, MX, pt) ```
+``` Which regions is this component turned on for? (global, {region} ) ```
 - The cli will then run and create the necessary files including stubeed out unit and e2e tests.
